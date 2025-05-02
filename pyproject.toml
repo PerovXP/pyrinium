@@ -4,6 +4,7 @@ version = "0.0.1"
 authors = [
   { name="Daniil Perov", email="perov@otso.city" },
 ]
+dependencies=["requests"]
 description = "Parser for Sirius Universiry schedule"
 readme = "README.md"
 requires-python = ">=3.9"
