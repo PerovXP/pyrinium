@@ -1,4 +1,4 @@
-from src.pyrinium.parser.core import Parser
+from .parser import Parser
 
 
 def prettify_schedule(response):

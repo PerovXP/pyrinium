@@ -1,5 +1,6 @@
 import requests
 import random
+from .extractor import get_initial_data, get_livewire_token
 
 XSRF_TOKEN_COOKIE_NAME = "XSRF-TOKEN"
 SESSION_TOKEN_COOKIE_NAME = "raspisanie_universitet_sirius_session"
