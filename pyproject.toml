@@ -1,6 +1,6 @@
 [project]
 name = "pyrinium"
-version = "0.0.1"
+version = "0.0.7"
 authors = [
   { name="Daniil Perov", email="perov@otso.city" },
 ]
