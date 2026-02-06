@@ -4,16 +4,17 @@ from .extractor import get_initial_data, get_livewire_token
 
 XSRF_TOKEN_COOKIE_NAME = "XSRF-TOKEN"
 SESSION_TOKEN_COOKIE_NAME = "raspisanie_universitet_sirius_session"
+DEFAULT_TIMEOUT = 15
 
 
 def get_call_method_update_object(method: str, params=None):
     return {
         "type": "callMethod",
         "payload": {
-            "id": format(int(random.random() + 1 * (36 ** 10)), "010x")[2:],
+            "id": format(int(random.random() + 1 * (36**10)), "010x")[2:],
             "method": method,
-            "params": [] if params is None else params
-        }
+            "params": [] if params is None else params,
+        },
     }
 
 
@@ -22,7 +23,9 @@ def get_events_array(data):
 
 
 class Parser:
-    def __init__(self, base_url: str, main_grid_path: str):
+    def __init__(
+        self, base_url: str, main_grid_path: str, timeout: int = DEFAULT_TIMEOUT
+    ):
         self.livewire_token = None
         self.session_token = None
         self.xsrf_token = None
@@ -30,6 +33,7 @@ class Parser:
 
         self.base_url = base_url
         self.main_grid_path = main_grid_path
+        self.timeout = timeout
 
         self.session = requests.Session()
 
@@ -37,10 +41,13 @@ class Parser:
         return self.base_url + path
 
     def get_initial_data(self):
-        r = self.session.get(self.base_url)
+        r = self.session.get(self.base_url, timeout=self.timeout)
         html = r.text
 
-        if XSRF_TOKEN_COOKIE_NAME not in r.cookies or SESSION_TOKEN_COOKIE_NAME not in r.cookies:
+        if (
+            XSRF_TOKEN_COOKIE_NAME not in r.cookies
+            or SESSION_TOKEN_COOKIE_NAME not in r.cookies
+        ):
             raise Exception("CookieTokensError")
 
         self.xsrf_token = r.cookies.get(XSRF_TOKEN_COOKIE_NAME)
@@ -50,19 +57,17 @@ class Parser:
         self.data = get_initial_data(html)
 
     def send_updates(self, updates):
-        headers = {
-            "X-Livewire": "true",
-            "X-Csrf-Token": self.livewire_token
-        }
+        headers = {"X-Livewire": "true", "X-Csrf-Token": self.livewire_token}
 
         r = self.session.post(
             self.get_url(self.main_grid_path),
             json={
                 "fingerprint": self.data["fingerprint"],
                 "serverMemo": self.data["serverMemo"],
-                "updates": updates
+                "updates": updates,
             },
-            headers=headers
+            headers=headers,
+            timeout=self.timeout,
         )
 
         return r.json()

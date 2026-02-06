@@ -6,15 +6,22 @@ def prettify_schedule(response):
 
     result = {
         "group": data["group"],
-        "events": [x for i in data["events"] for x in data["events"][i]] if "events" in data else []
+        "events": [x for i in data["events"] for x in data["events"][i]]
+        if "events" in data
+        else [],
     }
 
     return result
 
 
 class Pyrinium:
-    def __init__(self, base_url="https://schedule.siriusuniversity.ru", main_grid_path="/livewire/message/main-grid"):
-        self.parser = Parser(base_url, main_grid_path)
+    def __init__(
+        self,
+        base_url="https://schedule.siriusuniversity.ru",
+        main_grid_path="/livewire/message/main-grid",
+        timeout=15,
+    ):
+        self.parser = Parser(base_url, main_grid_path, timeout=timeout)
 
     def get_initial_data(self):
         self.parser.get_initial_data()
