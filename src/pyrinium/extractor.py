@@ -2,7 +2,7 @@ import json
 import re
 
 LIVEWIRE_TOKEN_REGEX = "window.livewire_token = '([0-9A-Za-z]+)';"
-INITIAL_DATA_REGEX = "wire:initial-data=\"(.+)\""
+INITIAL_DATA_REGEX = r'wire:initial-data="([^"]+)"'
 
 
 def get_livewire_token(html: str):
@@ -20,7 +20,7 @@ def get_initial_data(html: str):
     if raw_initial_data is None:
         raise Exception("InitialDataGettingError")
 
-    initial_data_json = raw_initial_data[1].replace("&quot;", "\"")
+    initial_data_json = raw_initial_data[1].replace("&quot;", '"')
     initial_data = json.loads(initial_data_json)
 
     return initial_data
