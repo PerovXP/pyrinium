@@ -51,7 +51,7 @@ class Parser:
         self.data["serverMemo"]["htmlHash"] = response_data["serverMemo"]["htmlHash"]
 
     def get_initial_data(self):
-        """Update cached Livewire server memo from response."""
+        """Load initial HTML, cookies and Livewire bootstrap data."""
         r = self.session.get(self.base_url, timeout=self.timeout)
         r.raise_for_status()
         html = r.text
