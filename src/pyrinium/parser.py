@@ -8,6 +8,7 @@ DEFAULT_TIMEOUT = 15
 
 
 def get_call_method_update_object(method: str, params=None):
+    """Build a Livewire update payload for a method call."""
     return {
         "type": "callMethod",
         "payload": {
@@ -19,6 +20,7 @@ def get_call_method_update_object(method: str, params=None):
 
 
 def get_events_array(data):
+    """Extract events from raw Livewire response."""
     return data["serverMemo"]["events"]
 
 
@@ -26,6 +28,7 @@ class Parser:
     def __init__(
         self, base_url: str, main_grid_path: str, timeout: int = DEFAULT_TIMEOUT
     ):
+        """Initialize low-level Livewire parser."""
         self.livewire_token = None
         self.session_token = None
         self.xsrf_token = None
@@ -37,10 +40,12 @@ class Parser:
 
         self.session = requests.Session()
 
-    def get_url(self, path):
+    def __get_url(self, path):
+        """Join base URL and API path."""
         return self.base_url + path
 
     def get_initial_data(self):
+        """Update cached Livewire server memo from response."""
         r = self.session.get(self.base_url, timeout=self.timeout)
         html = r.text
 
@@ -57,10 +62,11 @@ class Parser:
         self.data = get_initial_data(html)
 
     def send_updates(self, updates):
+        """Send update list to Livewire endpoint and return parsed JSON."""
         headers = {"X-Livewire": "true", "X-Csrf-Token": self.livewire_token}
 
         r = self.session.post(
-            self.get_url(self.main_grid_path),
+            self.__get_url(self.main_grid_path),
             json={
                 "fingerprint": self.data["fingerprint"],
                 "serverMemo": self.data["serverMemo"],
@@ -73,11 +79,13 @@ class Parser:
         return r.json()
 
     def get_schedule(self, group):
+        """Select group and return raw schedule response."""
         data = self.send_updates([get_call_method_update_object("set", [group])])
 
         return data
 
     def change_week(self, step):
+        """Move week pointer by `step` and return the final raw response."""
         method = "addWeek" if step > 0 else "minusWeek"
         for i in range(abs(step)):
             data = self.send_updates([get_call_method_update_object(method)])

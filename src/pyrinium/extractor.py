@@ -6,6 +6,7 @@ INITIAL_DATA_REGEX = r'wire:initial-data="([^"]+)"'
 
 
 def get_livewire_token(html: str):
+    """Extract Livewire token from page HTML."""
     token = re.search(LIVEWIRE_TOKEN_REGEX, html)
 
     if token is None:
@@ -15,6 +16,7 @@ def get_livewire_token(html: str):
 
 
 def get_initial_data(html: str):
+    """Extract Livewire token from page HTML."""
     raw_initial_data = re.search(INITIAL_DATA_REGEX, html)
 
     if raw_initial_data is None:
