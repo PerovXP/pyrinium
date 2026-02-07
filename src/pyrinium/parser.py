@@ -46,10 +46,9 @@ class Parser:
 
     def _sync_server_memo(self, response_data):
         """Update cached Livewire server memo from response."""
-        if self.data is None:
-            return
-        if "serverMemo" in response_data:
-            self.data["serverMemo"] = response_data["serverMemo"]
+        self.data["serverMemo"]["data"].update(response_data["serverMemo"]["data"])
+        self.data["serverMemo"]["checksum"] = response_data["serverMemo"]["checksum"]
+        self.data["serverMemo"]["htmlHash"] = response_data["serverMemo"]["htmlHash"]
 
     def get_initial_data(self):
         """Update cached Livewire server memo from response."""
@@ -95,19 +94,13 @@ class Parser:
     def get_schedule(self, group):
         """Select group and return raw schedule response."""
         data = self.send_updates([get_call_method_update_object("set", [group])])
-        self._sync_server_memo(data)
 
         return data
 
     def change_week(self, step):
         """Move week pointer by `step` and return the final raw response."""
-        data = self.data
-        if step == 0:
-            return data
-
         method = "addWeek" if step > 0 else "minusWeek"
         for i in range(abs(step)):
             data = self.send_updates([get_call_method_update_object(method)])
-            self._sync_server_memo(data)
 
-        return data
+            self._sync_server_memo(data)
