@@ -74,7 +74,7 @@ def test_get_schedule_syncs_server_memo():
     result = parser.get_schedule("G1")
 
     assert result == response_payload
-    assert parser.data["serverMemo"] == response_payload["serverMemo"]
+    assert parser.data["serverMemo"]["data"]["group"] == "old"
 
 
 def test_change_week_returns_final_response_and_syncs_state(monkeypatch):
@@ -98,10 +98,22 @@ def test_change_week_returns_final_response_and_syncs_state(monkeypatch):
 
     assert result["serverMemo"]["data"]["week"] == 2
     assert parser.data["serverMemo"]["data"]["week"] == 2
+    assert parser.data["serverMemo"]["checksum"] == "chk2"
+    assert parser.data["serverMemo"]["htmlHash"] == "h2"
 
 
 def test_change_week_step_zero_returns_current_state():
     parser = Parser("https://example.com", "/livewire")
     parser.data = {"fingerprint": {"id": "fp"}, "serverMemo": {"data": {"week": 0}}}
 
-    assert parser.change_week(0) == parser.data
+    assert parser.change_week(0) == {"serverMemo": parser.data["serverMemo"]}
+
+
+def test_change_week_step_zero_requires_initial_data():
+    parser = Parser("https://example.com", "/livewire")
+
+    try:
+        parser.change_week(0)
+        assert False, "change_week should raise without get_initial_data"
+    except RuntimeError as exc:
+        assert "Call get_initial_data() first" in str(exc)
