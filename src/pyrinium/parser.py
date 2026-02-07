@@ -54,6 +54,7 @@ class Parser:
     def get_initial_data(self):
         """Update cached Livewire server memo from response."""
         r = self.session.get(self.base_url, timeout=self.timeout)
+        r.raise_for_status()
         html = r.text
 
         if (
@@ -70,6 +71,11 @@ class Parser:
 
     def send_updates(self, updates):
         """Send update list to Livewire endpoint and return parsed JSON."""
+        if self.data is None:
+            raise RuntimeError(
+                "Initial data is not loaded. Call get_initial_data() first."
+            )
+
         headers = {"X-Livewire": "true", "X-Csrf-Token": self.livewire_token}
 
         r = self.session.post(
@@ -82,6 +88,7 @@ class Parser:
             headers=headers,
             timeout=self.timeout,
         )
+        r.raise_for_status()
 
         return r.json()
 
