@@ -40,9 +40,16 @@ class Parser:
 
         self.session = requests.Session()
 
-    def __get_url(self, path):
+    def _get_url(self, path):
         """Join base URL and API path."""
         return self.base_url + path
+
+    def _sync_server_memo(self, response_data):
+        """Update cached Livewire server memo from response."""
+        if self.data is None:
+            return
+        if "serverMemo" in response_data:
+            self.data["serverMemo"] = response_data["serverMemo"]
 
     def get_initial_data(self):
         """Update cached Livewire server memo from response."""
@@ -66,7 +73,7 @@ class Parser:
         headers = {"X-Livewire": "true", "X-Csrf-Token": self.livewire_token}
 
         r = self.session.post(
-            self.__get_url(self.main_grid_path),
+            self._get_url(self.main_grid_path),
             json={
                 "fingerprint": self.data["fingerprint"],
                 "serverMemo": self.data["serverMemo"],
@@ -81,15 +88,19 @@ class Parser:
     def get_schedule(self, group):
         """Select group and return raw schedule response."""
         data = self.send_updates([get_call_method_update_object("set", [group])])
+        self._sync_server_memo(data)
 
         return data
 
     def change_week(self, step):
         """Move week pointer by `step` and return the final raw response."""
+        data = self.data
+        if step == 0:
+            return data
+
         method = "addWeek" if step > 0 else "minusWeek"
         for i in range(abs(step)):
             data = self.send_updates([get_call_method_update_object(method)])
+            self._sync_server_memo(data)
 
-            self.data["serverMemo"]["data"].update(data["serverMemo"]["data"])
-            self.data["serverMemo"]["checksum"] = data["serverMemo"]["checksum"]
-            self.data["serverMemo"]["htmlHash"] = data["serverMemo"]["htmlHash"]
+        return data
