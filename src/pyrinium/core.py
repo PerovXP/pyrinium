@@ -6,7 +6,7 @@ def prettify_schedule(response):
     data = response["serverMemo"]["data"]
 
     result = {
-        "group": data["group"],
+        "group": data.get("group"),
         "events": [x for i in data["events"] for x in data["events"][i]]
         if "events" in data
         else [],
@@ -65,6 +65,10 @@ class Pyrinium:
                 Zero keeps current week.
 
         Returns:
-            Raw Livewire response of the final step, or current state for step=0.
+            Dict with fields:
+            - group: selected group name.
+            - events: flat list of events.
         """
-        return self.parser.change_week(step)
+        schedule = self.parser.change_week(step)
+
+        return prettify_schedule(schedule)

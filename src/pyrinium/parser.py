@@ -99,8 +99,19 @@ class Parser:
 
     def change_week(self, step):
         """Move week pointer by `step` and return the final raw response."""
+        if self.data is None:
+            raise RuntimeError(
+                "Initial data is not loaded. Call get_initial_data() first."
+            )
+
+        data = {"serverMemo": self.data["serverMemo"]}
+        if step == 0:
+            return data
+
         method = "addWeek" if step > 0 else "minusWeek"
         for i in range(abs(step)):
             data = self.send_updates([get_call_method_update_object(method)])
 
             self._sync_server_memo(data)
+
+        return data
