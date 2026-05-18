@@ -1,4 +1,4 @@
-![Pyrinium](https://i.supa.codes/oiHZ49)
+![Pyrinium](https://raw.githubusercontent.com/PerovXP/pyrinium/main/assets/banner.png)
 
 ## Installation
 
