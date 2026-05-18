@@ -1,24 +1,36 @@
 [project]
 name = "pyrinium"
 version = "0.1.1"
-authors = [
-  { name="Daniil Perov", email="perov@otso.city" },
-]
-dependencies=["requests"]
+authors = [{ name = "Daniil Perov", email = "perov@otso.city" }]
 description = "Parser for Sirius University schedule"
 readme = "README.md"
 requires-python = ">=3.9"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
+dependencies = ["requests"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.optional-dependencies]
+dev = ["build", "pytest", "ruff", "twine"]
 
 [project.urls]
 Homepage = "https://github.com/PerovXP/pyrinium"
+Repository = "https://github.com/PerovXP/pyrinium"
 Issues = "https://github.com/PerovXP/pyrinium/issues"
 
 [build-system]
-requires = ["hatchling >= 1.26"]
+requires = ["hatchling >= 1.27"]
 build-backend = "hatchling.build"
